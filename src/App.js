@@ -1,4 +1,5 @@
 // eslint-disable-next-line no-unused-vars
+import axios from "axios";
 import React, { useMemo, useRef, useState } from "react";
 import PostFilter from "./components/PostFilter";
 import PostForm from "./components/PostForm";
@@ -26,12 +27,19 @@ function App() {
     setPosts([...posts, newPost]);
     setModal(false);
   };
+
+  async function fetchPosts() {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    setPosts(response.data);
+  };
+
   const removePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id));
   };
 
   return (
     <div className="app">
+      <button onClick={fetchPosts}>GET POSTS</button>
       <MyButton style={{ marginTop: 30 }} onClick={() => setModal(true)}>
         Создать пост
       </MyButton>
