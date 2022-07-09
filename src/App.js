@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import axios from "axios";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import PostFilter from "./components/PostFilter";
 import PostForm from "./components/PostForm";
 // import PostItem from "./components/PostItem";
@@ -12,6 +12,7 @@ import { usePosts } from "./hooks/usePosts";
 // import ClassCounter from "./components/ClassCounter";
 // import Counter from "./components/Counter";
 import "./styles/App.css";
+import PostService from './API/PostService';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -28,9 +29,13 @@ function App() {
     setModal(false);
   };
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   async function fetchPosts() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-    setPosts(response.data);
+    const posts = await PostService.getAll();
+    setPosts(posts);
   };
 
   const removePost = (post) => {
