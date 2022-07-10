@@ -13,16 +13,14 @@ import { usePosts } from "./hooks/usePosts";
 // import Counter from "./components/Counter";
 import "./styles/App.css";
 import PostService from './API/PostService';
+import Loader from './components/UI/Loader/Loader';
 
 function App() {
-  const [posts, setPosts] = useState([
-    { id: 1, title: 'JavaScript', body: 'Description' },
-    { id: 2, title: 'JavaScript 2', body: 'Description' },
-    { id: 3, title: 'JavaScript 3', body: 'Description' },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+  const [isPostsLoading, setIsPostsLoading] = useState(false);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -34,8 +32,10 @@ function App() {
   }, []);
 
   async function fetchPosts() {
+    setIsPostsLoading(true);
     const posts = await PostService.getAll();
     setPosts(posts);
+    setIsPostsLoading(false);
   };
 
   const removePost = (post) => {
@@ -44,7 +44,6 @@ function App() {
 
   return (
     <div className="app">
-      <button onClick={fetchPosts}>GET POSTS</button>
       <MyButton style={{ marginTop: 30 }} onClick={() => setModal(true)}>
         Создать пост
       </MyButton>
@@ -56,7 +55,10 @@ function App() {
         filter={filter}
         setFilter={setFilter}
       />
-      <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Посты про JS' />
+      {isPostsLoading
+        ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}><Loader /></div>
+        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Посты про JS' />
+      }
     </div >
   );
 }
